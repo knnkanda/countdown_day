@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>あと何日タイマー</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: $ px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .countdown {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .countdown-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3498db;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .countdown-label {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+        
+        .alternative-display {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            font-size: 1.5rem;
+            color: #ff69b4;
+        }
+        
+        .alternative-item {
+            margin: 0 15px;
+        }
+        
+        .alternative-value {
+            font-weight: bold;
+            color: #ff1493;
+        }
+        
+        .social-share {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .share-button {
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            transition: opacity 0.3s;
+        }
+        
+        .share-button:hover {
+            opacity: 0.85;
+        }
+        
+        .twitter-button {
+            background-color: #1DA1F2;
+        }
+        
+        .facebook-button {
+            background-color: #4267B2;
+        }
+        
+        .event-title {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .completed {
+            font-size: 2rem;
+            color: #27ae60;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>あと何日タイマー</h1>
+        
+        <div class="input-group">
+            <label for="event-name">イベント名：</label>
+            <input type="text" id="event-name" placeholder="例：誕生日パーティー">
+            
+            <label for="event-date">イベント日時：</label>
+            <input type="datetime-local" id="event-date">
+            
+            <button id="start-countdown">カウントダウン開始</button>
+        </div>
+        
+        <div id="event-display" style="display: none;">
+            <div class="event-title" id="display-event-name"></div>
+            <div class="countdown">
+                <div class="countdown-item">
+                    <div class="countdown-value" id="days">00</div>
+                    <div class="countdown-label">日</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="hours">00</div>
+                    <div class="countdown-label">時間</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="minutes">00</div>
+                    <div class="countdown-label">分</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-value" id="seconds">00</div>
+                    <div class="countdown-label">秒</div>
+                </div>
+            </div>
+            <div class="alternative-display" id="alternative-countdown">
+                <div class="alternative-item">
+                    <span class="alternative-value" id="alt-years">0</span> 年
+                </div>
+                <div class="alternative-item">
+                    <span class="alternative-value" id="alt-months">0</span> ヶ月
+                </div>
+                <div class="alternative-item">
+                    <span class="alternative-value" id="alt-days">0</span> 日
+                </div>
+            </div>
+            <div id="completed-message" class="completed" style="display: none;">
+                イベント開始！
+            </div>
+            <div class="social-share">
+                <button class="share-button twitter-button" id="share-twitter">
+                    X（旧Twitter）で共有
+                </button>
+                <button class="share-button facebook-button" id="share-facebook">
+                    Facebookで共有
+                </button>
+            </div>
+            <button id="reset-countdown" style="margin-top: 20px;">リセット</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM要素の取得
+        const eventNameInput = document.getElementById('event-name');
+        const eventDateInput = document.getElementById('event-date');
+        const startButton = document.getElementById('start-countdown');
+        const resetButton = document.getElementById('reset-countdown');
+        const eventDisplay = document.getElementById('event-display');
+        const displayEventName = document.getElementById('display-event-name');
+        const daysElement = document.getElementById('days');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        const completedMessage = document.getElementById('completed-message');
+        const altYearsElement = document.getElementById('alt-years');
+        const altMonthsElement = document.getElementById('alt-months');
+        const altDaysElement = document.getElementById('alt-days');
+        const alternativeCountdown = document.getElementById('alternative-countdown');
+        const shareTwitterButton = document.getElementById('share-twitter');
+        const shareFacebookButton = document.getElementById('share-facebook');
+        
+        // 入力フォームの初期値設定
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        now.setHours(now.getHours() + 1);
+        now.setMinutes(0);
+        now.setSeconds(0);
+        eventDateInput.value = now.toISOString().slice(0, 16);
+        
+        let countdownInterval;
+        let targetDate;
+        
+        // カウントダウン開始ボタンのイベントリスナー
+        startButton.addEventListener('click', function() {
+            const eventName = eventNameInput.value || 'イベント';
+            const eventDate = new Date(eventDateInput.value).getTime();
+            
+            if (isNaN(eventDate)) {
+                alert('有効な日時を入力してください');
+                return;
+            }
+            
+            targetDate = eventDate;
+            displayEventName.textContent = eventName;
+            startCountdown();
+            
+            // 表示の切り替え
+            eventDisplay.style.display = 'block';
+            document.querySelector('.input-group').style.display = 'none';
+            alternativeCountdown.style.display = 'flex';
+        });
+        
+        // リセットボタンのイベントリスナー
+        resetButton.addEventListener('click', function() {
+            clearInterval(countdownInterval);
+            eventDisplay.style.display = 'none';
+            document.querySelector('.input-group').style.display = 'block';
+            completedMessage.style.display = 'none';
+            alternativeCountdown.style.display = 'none';
+            eventNameInput.value = '';
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            now.setHours(now.getHours() + 1);
+            now.setMinutes(0);
+            now.setSeconds(0);
+            eventDateInput.value = now.toISOString().slice(0, 16);
+        });
+        
+        // カウントダウン機能
+        function startCountdown() {
+            // 既存のカウントダウンをクリア
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            updateCountdown();
+            
+            countdownInterval = setInterval(updateCountdown, 1000);
+            
+            // ソーシャルメディア共有ボタンのイベントリスナーを設定
+            setupSocialSharing();
+        }
+        
+        function setupSocialSharing() {
+            shareTwitterButton.addEventListener('click', shareOnTwitter);
+            shareFacebookButton.addEventListener('click', shareOnFacebook);
+        }
+        
+        function shareOnTwitter() {
+            const eventName = displayEventName.textContent;
+            const days = daysElement.textContent;
+            const hours = hoursElement.textContent;
+            const minutes = minutesElement.textContent;
+            const seconds = secondsElement.textContent;
+            
+            const shareText = `${eventName}まであと${days}日${hours}時間${minutes}分${seconds}秒です！ #あと何日タイマー`;
+            const shareUrl = encodeURIComponent(window.location.href);
+            
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${shareUrl}`, '_blank');
+        }
+        
+        function shareOnFacebook() {
+            const shareUrl = encodeURIComponent(window.location.href);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank');
+        }
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            
+            if (distance <= 0) {
+                clearInterval(countdownInterval);
+                daysElement.textContent = '00';
+                hoursElement.textContent = '00';
+                minutesElement.textContent = '00';
+                secondsElement.textContent = '00';
+                altYearsElement.textContent = '0';
+                altMonthsElement.textContent = '0';
+                altDaysElement.textContent = '0';
+                completedMessage.style.display = 'block';
+                alternativeCountdown.style.display = 'none';
+                return;
+            }
+            
+            // 残り時間の計算
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            // 年・月・日の計算
+            const years = Math.floor(days / 365);
+            const months = Math.floor((days % 365) / 30);
+            const remainingDays = Math.floor((days % 365) % 30);
+            
+            // 表示を更新
+            daysElement.textContent = days.toString().padStart(2, '0');
+            hoursElement.textContent = hours.toString().padStart(2, '0');
+            minutesElement.textContent = minutes.toString().padStart(2, '0');
+            secondsElement.textContent = seconds.toString().padStart(2, '0');
+            
+            // 年・月・日の表示を更新
+            altYearsElement.textContent = years;
+            altMonthsElement.textContent = months;
+            altDaysElement.textContent = remainingDays;
+        }
+    </script>
+</body>
+</html>
