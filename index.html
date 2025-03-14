@@ -179,6 +179,7 @@
         
         <div id="event-display" style="display: none;">
             <div class="event-title" id="display-event-name"></div>
+            <div class="target-date" id="display-target-date" style="font-size: 1rem; color: #6c757d; margin: 10px 0;"></div>
             <div class="countdown">
                 <div class="countdown-item">
                     <div class="countdown-value" id="days">00</div>
@@ -231,6 +232,7 @@
         const resetButton = document.getElementById('reset-countdown');
         const eventDisplay = document.getElementById('event-display');
         const displayEventName = document.getElementById('display-event-name');
+        const displayTargetDate = document.getElementById('display-target-date');
         const daysElement = document.getElementById('days');
         const hoursElement = document.getElementById('hours');
         const minutesElement = document.getElementById('minutes');
@@ -266,6 +268,11 @@
             
             targetDate = eventDate;
             displayEventName.textContent = eventName;
+            
+            // 設定した日時を表示
+            const formattedDate = formatTargetDate(new Date(eventDate));
+            displayTargetDate.textContent = `${formattedDate} まであと…`;
+            
             startCountdown();
             
             // 表示の切り替え
@@ -273,6 +280,17 @@
             document.querySelector('.input-group').style.display = 'none';
             alternativeCountdown.style.display = 'flex';
         });
+        
+        // 日付フォーマット関数
+        function formatTargetDate(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hours = date.getHours();
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            return `${year}年${month}月${day}日 ${hours}:${minutes}`;
+        }
         
         // リセットボタンのイベントリスナー
         resetButton.addEventListener('click', function() {
